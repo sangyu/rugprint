@@ -1,0 +1,9 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "rugprint"
+  site-url: "https://sangyu.github.io/rugprint"
+  description: ""
+  repo-branch: main
+  repo-url: "https://github.com/sangyu/rugprint"

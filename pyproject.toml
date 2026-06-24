@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rugprint"
+dynamic = ["version"]
+description = ""
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Apache-2.0"}
+authors = [{name = "Sangyu Xu", email = "xusangyu@gmail.com"}]
+keywords = ['nbdev']
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+]
+dependencies = []
+
+[project.urls]
+Repository = "https://github.com/sangyu/rugprint"
+Documentation = "https://sangyu.github.io/rugprint/"
+
+[project.entry-points.nbdev]
+rugprint = "rugprint._modidx:d"
+
+[tool.setuptools.dynamic]
+version = {attr = "rugprint.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["rugprint"]
+
+[tool.nbdev]
