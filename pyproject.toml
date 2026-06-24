@@ -5,17 +5,23 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "rugprint"
 dynamic = ["version"]
-description = ""
+description = "Sparse projection-rug maps for multivariate data"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "Apache-2.0"}
 authors = [{name = "Sangyu Xu", email = "xusangyu@gmail.com"}]
-keywords = ['nbdev']
+keywords = ['nbdev', 'visualization', 'matplotlib', 'multivariate-data']
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
 ]
-dependencies = []
+dependencies = [
+    "numpy",
+    "pandas",
+    "matplotlib",
+    "palmerpenguins",
+    "nbdev",
+]
 
 [project.urls]
 Repository = "https://github.com/sangyu/rugprint"
