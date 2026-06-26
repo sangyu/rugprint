@@ -2,5 +2,6 @@ website:
   sidebar:
     contents:
       - index.ipynb
-      - 00_core.ipynb
+      - api.ipynb
       - tutorial_penguins.ipynb
+      - tutorial_feeding.ipynb

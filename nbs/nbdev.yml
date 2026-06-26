@@ -4,6 +4,6 @@ project:
 website:
   title: "rugprint"
   site-url: "https://sangyu.github.io/rugprint"
-  description: "Sparse projection-rug maps for multivariate data"
+  description: "Projection-rug fingerprints for multivariate data"
   repo-branch: main
   repo-url: "https://github.com/sangyu/rugprint"

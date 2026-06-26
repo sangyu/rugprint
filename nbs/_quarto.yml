@@ -1,5 +1,11 @@
 project:
   type: website
+  render:
+    - "*.ipynb"
+    - "!00_core.ipynb"
+    - "!01_tests.ipynb"
+  resources:
+    - "../figures/**"
 
 format:
   html:
