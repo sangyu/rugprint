@@ -30,11 +30,6 @@ The longer hands-on walkthrough is the [Palmer Penguins
 tutorial](tutorial_penguins.html). Start there if you want to adapt the
 plot for your own dataset.
 
-There is also a [fly-level feeding tutorial](tutorial_feeding.html)
-using a Gr64f/C29D feeding table from `data/`, which shows how to
-aggregate event-level reads into paired light-on/light-off fly
-measurements before plotting.
-
 ## Make Your Own Rugprint
 
 The object-oriented API is the recommended path. Load a dataframe into a
@@ -118,8 +113,6 @@ the notebooks in `nbs/`:
 - `nbs/01_tests.ipynb` contains executable tests for CI.
 - `nbs/tutorial_penguins.ipynb` renders the Palmer Penguins tutorial for
   GitHub Pages.
-- `nbs/tutorial_feeding.ipynb` renders the Gr64f/C29D fly-level feeding
-  tutorial.
 
 Common commands:
 

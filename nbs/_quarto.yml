@@ -4,6 +4,7 @@ project:
     - "*.ipynb"
     - "!00_core.ipynb"
     - "!01_tests.ipynb"
+    - "!tutorial_feeding.ipynb"
   resources:
     - "../figures/**"
 

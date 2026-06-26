@@ -4,4 +4,3 @@ website:
       - index.ipynb
       - api.ipynb
       - tutorial_penguins.ipynb
-      - tutorial_feeding.ipynb

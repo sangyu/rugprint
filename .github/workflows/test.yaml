@@ -1,7 +1,46 @@
 name: CI
-on:  [workflow_dispatch, pull_request, push]
+on: [workflow_dispatch, pull_request, push]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    steps: [uses: answerdotai/workflows/nbdev3-ci@master]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Test with nbdev
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python -m pip install --upgrade pip
+          pip install -U "nbdev>=3"
+          pip install -e .
+
+          echo "Check we are starting with clean git checkout"
+          if [[ -n "$(git status --porcelain -uno)" ]]; then
+            git diff
+            echo "git status is not clean"
+            exit 1
+          fi
+
+          echo "Trying to strip out notebooks"
+          nbdev-clean
+          echo "Check that strip out was unnecessary"
+          git status -s
+          if [[ -n "$(git status --porcelain -uno)" ]]; then
+            git status -uno
+            echo "!!! Detected unstripped notebooks"
+            echo "!!! Remember to run nbdev-clean"
+            exit 1
+          fi
+
+          nbdev-export
+          if [[ -n "$(git status --porcelain -uno)" ]]; then
+            echo "::error::Notebooks and library are not in sync. Please run nbdev-export."
+            git status -uno
+            git diff
+            exit 1
+          fi
+
+          nbdev-test --n_workers 0 --do_print

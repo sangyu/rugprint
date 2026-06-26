@@ -150,3 +150,9 @@ checklink/cookies.txt
 
 # Quarto
 .quarto
+
+# Local embargoed feeding tutorial draft and source data/assets
+nbs/tutorial_feeding.ipynb
+data/Gr64f-C29D_*
+nbs/figures/Gr64f-C29D_*
+raw materials/
