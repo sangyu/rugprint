@@ -1,0 +1,302 @@
+[
+  {
+    "objectID": "tutorial_penguins.html",
+    "href": "tutorial_penguins.html",
+    "title": "Palmer Penguins Tutorial",
+    "section": "",
+    "text": "This tutorial walks through the object-oriented Rugprint workflow using the Palmer Penguins dataset. The goal is not to make a complete pairplot. The goal is to choose a small set of bivariate projections and arrange them so one highlighted observation can be followed through shared one-dimensional rugs.",
+    "crumbs": [
+      "Palmer Penguins Tutorial"
+    ]
+  },
+  {
+    "objectID": "tutorial_penguins.html#setup",
+    "href": "tutorial_penguins.html#setup",
+    "title": "Palmer Penguins Tutorial",
+    "section": "Setup",
+    "text": "Setup\nStart by loading the demo data and the object-oriented constructor. The load(...) function returns a Rugprint object; call .plot() when you are ready to draw.\n\nfrom pathlib import Path\n\nfrom rugprint.core import load_penguins, load, rugprint, rank_pair_separation\n\npenguins = load_penguins()\npenguins.head()\n\n\n\n\n\n\n\n\nspecies\nisland\nbill_length_mm\nbill_depth_mm\nflipper_length_mm\nbody_mass_g\nsex\nyear\n\n\n\n\n0\nAdelie\nTorgersen\n39.1\n18.7\n181.0\n3750.0\nmale\n2007\n\n\n1\nAdelie\nTorgersen\n39.5\n17.4\n186.0\n3800.0\nfemale\n2007\n\n\n2\nAdelie\nTorgersen\n40.3\n18.0\n195.0\n3250.0\nfemale\n2007\n\n\n3\nAdelie\nTorgersen\n36.7\n19.3\n193.0\n3450.0\nfemale\n2007\n\n\n4\nAdelie\nTorgersen\n39.3\n20.6\n190.0\n3650.0\nmale\n2007\n\n\n\n\n\n\n\nThe cleaned demo dataset keeps the four numeric measurements used throughout the vignette and drops rows with missing values.\n\nfeatures = [\n    \"bill_length_mm\",\n    \"bill_depth_mm\",\n    \"flipper_length_mm\",\n    \"body_mass_g\",\n]\n\ngroup = \"species\"\n\npenguins[features + [group]].describe(include=\"all\")\n\n\n\n\n\n\n\n\nbill_length_mm\nbill_depth_mm\nflipper_length_mm\nbody_mass_g\nspecies\n\n\n\n\ncount\n342.000000\n342.000000\n342.000000\n342.000000\n342\n\n\nunique\nNaN\nNaN\nNaN\nNaN\n3\n\n\ntop\nNaN\nNaN\nNaN\nNaN\nAdelie\n\n\nfreq\nNaN\nNaN\nNaN\nNaN\n151\n\n\nmean\n43.921930\n17.151170\n200.915205\n4201.754386\nNaN\n\n\nstd\n5.459584\n1.974793\n14.061714\n801.954536\nNaN\n\n\nmin\n32.100000\n13.100000\n172.000000\n2700.000000\nNaN\n\n\n25%\n39.225000\n15.600000\n190.000000\n3550.000000\nNaN\n\n\n50%\n44.450000\n17.300000\n197.000000\n4050.000000\nNaN\n\n\n75%\n48.500000\n18.700000\n213.000000\n4750.000000\nNaN\n\n\nmax\n59.600000\n21.500000\n231.000000\n6300.000000\nNaN",
+    "crumbs": [
+      "Palmer Penguins Tutorial"
+    ]
+  },
+  {
+    "objectID": "tutorial_penguins.html#choose-candidate-projections",
+    "href": "tutorial_penguins.html#choose-candidate-projections",
+    "title": "Palmer Penguins Tutorial",
+    "section": "Choose Candidate Projections",
+    "text": "Choose Candidate Projections\nrank_pair_separation(...) is a lightweight helper. It computes species centroids for every feature pair and ranks pairs by their mean between-species centroid distance. This is not a statistical test; it is a practical way to find projection panels that may separate groups visually.\n\nrank_pair_separation(penguins, features, group=group)\n\n\n\n\n\n\n\n\nx\ny\nmean_centroid_distance\n\n\n\n\n0\nbill_length_mm\nbody_mass_g\n917.418587\n\n\n1\nflipper_length_mm\nbody_mass_g\n917.224848\n\n\n2\nbill_depth_mm\nbody_mass_g\n916.905540\n\n\n3\nbill_length_mm\nflipper_length_mm\n20.543409\n\n\n4\nbill_depth_mm\nflipper_length_mm\n18.316375\n\n\n5\nbill_length_mm\nbill_depth_mm\n7.689819",
+    "crumbs": [
+      "Palmer Penguins Tutorial"
+    ]
+  },
+  {
+    "objectID": "tutorial_penguins.html#design-a-sparse-projection-map",
+    "href": "tutorial_penguins.html#design-a-sparse-projection-map",
+    "title": "Palmer Penguins Tutorial",
+    "section": "Design A Sparse Projection Map",
+    "text": "Design A Sparse Projection Map\nA Rugprint layout is a dictionary from projection pair to (row, column). Missing cells stay empty. For this tutorial, the layout is a chain of shared variables:\n\nbill_length_mm links the top panel to the center-left panel.\nflipper_length_mm links the center-left panel to the center-right panel.\nbody_mass_g links the center-right panel to the lower-right panel.\n\nThat chain is what lets the highlighted observation feel continuously tracked across the map.\n\nprojections = [\n    (\"bill_length_mm\", \"bill_depth_mm\"),\n    (\"bill_length_mm\", \"flipper_length_mm\"),\n    (\"body_mass_g\", \"flipper_length_mm\"),\n    (\"body_mass_g\", \"bill_depth_mm\"),\n]\n\nlayout = {\n    (\"bill_length_mm\", \"bill_depth_mm\"): (0, 1),\n    (\"bill_length_mm\", \"flipper_length_mm\"): (1, 1),\n    (\"body_mass_g\", \"flipper_length_mm\"): (1, 2),\n    (\"body_mass_g\", \"bill_depth_mm\"): (2, 2),\n}",
+    "crumbs": [
+      "Palmer Penguins Tutorial"
+    ]
+  },
+  {
+    "objectID": "tutorial_penguins.html#build-a-rugprint-object",
+    "href": "tutorial_penguins.html#build-a-rugprint-object",
+    "title": "Palmer Penguins Tutorial",
+    "section": "Build A Rugprint Object",
+    "text": "Build A Rugprint Object\nThe object stores the data, projections, layout, group colors, highlight row, and diagram styling. This makes it easy to reuse the same map while changing the highlighted observation or plotting options.\n\nrp = load(\n    penguins,\n    projections=projections,\n    layout=layout,\n    group=group,\n    highlight=0,\n    title=\"Palmer Penguins projection-rug fingerprint\",\n    diagram_mode=True,\n    show_axis_labels=False,\n    show_tick_labels=False,\n    connect_shared_rugs=True,\n    connector_style=\"dotted\",\n    panel_gap=0.04,\n    rug_gap=0.01,\n    rug_edges=\"shared\",\n)\n\nrp\n\n&lt;rugprint.core.Rugprint&gt;",
+    "crumbs": [
+      "Palmer Penguins Tutorial"
+    ]
+  },
+  {
+    "objectID": "tutorial_penguins.html#draw-the-fingerprint",
+    "href": "tutorial_penguins.html#draw-the-fingerprint",
+    "title": "Palmer Penguins Tutorial",
+    "section": "Draw The Fingerprint",
+    "text": "Draw The Fingerprint\nIn diagram mode, Rugprint removes most axis furniture by default. The rugs, local dashed guides, and subtle inter-panel connectors do the explanatory work.\n\nfig = rp.plot()\n\n\n\n\n\n\n\n\n\nfigure_dir = Path(\"figures\")\nif Path.cwd().name == \"nbs\":\n    figure_dir = Path(\"..\") / figure_dir\nfigure_dir.mkdir(exist_ok=True)\n\nfig.savefig(\n    figure_dir / \"rugprint_penguins_tutorial.png\",\n    dpi=200,\n    bbox_inches=\"tight\",\n)",
+    "crumbs": [
+      "Palmer Penguins Tutorial"
+    ]
+  },
+  {
+    "objectID": "tutorial_penguins.html#follow-another-observation",
+    "href": "tutorial_penguins.html#follow-another-observation",
+    "title": "Palmer Penguins Tutorial",
+    "section": "Follow Another Observation",
+    "text": "Follow Another Observation\nUse .with_highlight(...) to keep the same map specification and change only the tracked observation. This is useful for comparing how individual penguins reappear across several measurement spaces.\n\nfig = rp.with_highlight(12).plot(\n    title=\"A second penguin tracked through the projection map\",\n)\n\n\n\n\n\n\n\n\nYou can pass an integer row position or a dataframe index label to highlight. The emphasized point appears in every projection panel. Local dashed guides show its one-dimensional x and y projections, while dotted segments in shared rug gutters connect adjacent panels that share the same variable.",
+    "crumbs": [
+      "Palmer Penguins Tutorial"
+    ]
+  },
+  {
+    "objectID": "tutorial_penguins.html#add-labels-when-you-need-them",
+    "href": "tutorial_penguins.html#add-labels-when-you-need-them",
+    "title": "Palmer Penguins Tutorial",
+    "section": "Add Labels When You Need Them",
+    "text": "Add Labels When You Need Them\nThe default diagram hides axis labels and tick labels because labels can interrupt rug connections. For explanatory notebooks or presentations, you may temporarily turn labels back on.\n\nfig = rp.plot(\n    show_axis_labels=True,\n    show_tick_labels=False,\n    title=\"Same map with compact variable labels\",\n)",
+    "crumbs": [
+      "Palmer Penguins Tutorial"
+    ]
+  },
+  {
+    "objectID": "tutorial_penguins.html#rug-edge-modes",
+    "href": "tutorial_penguins.html#rug-edge-modes",
+    "title": "Palmer Penguins Tutorial",
+    "section": "Rug Edge Modes",
+    "text": "Rug Edge Modes\nrug_edges controls which panel edges receive rugs:\n\n\"shared\": put rugs on facing edges when adjacent panels share a variable.\n\"minimal\": use bottom x rugs and left y rugs.\n\"outer\": use bottom x rugs and outer-facing y rugs.\na dictionary: specify exact edges for each projection.\n\nThe default tutorial uses \"shared\" because it makes the highlighted trace feel continuous.\n\nfig = rp.plot(\n    rug_edges=\"minimal\",\n    connect_shared_rugs=False,\n    title=\"Minimal bottom-left rugs\",\n)",
+    "crumbs": [
+      "Palmer Penguins Tutorial"
+    ]
+  },
+  {
+    "objectID": "tutorial_penguins.html#one-shot-plotting",
+    "href": "tutorial_penguins.html#one-shot-plotting",
+    "title": "Palmer Penguins Tutorial",
+    "section": "One-Shot Plotting",
+    "text": "One-Shot Plotting\nFor quick scripts, the functional wrapper still works. It creates a Rugprint object internally and immediately calls .plot().\n\nfig = rugprint(\n    penguins,\n    projections=projections,\n    layout=layout,\n    group=group,\n    highlight=0,\n    title=\"One-shot Rugprint call\",\n)",
+    "crumbs": [
+      "Palmer Penguins Tutorial"
+    ]
+  },
+  {
+    "objectID": "tutorial_penguins.html#credit",
+    "href": "tutorial_penguins.html#credit",
+    "title": "Palmer Penguins Tutorial",
+    "section": "Credit",
+    "text": "Credit\nRugprint is inspired by Edward R. Tufte’s projection/rug display idea in The Visual Display of Quantitative Information (Graphics Press, 1983).",
+    "crumbs": [
+      "Palmer Penguins Tutorial"
+    ]
+  },
+  {
+    "objectID": "tutorial_penguins.html#practical-tips",
+    "href": "tutorial_penguins.html#practical-tips",
+    "title": "Palmer Penguins Tutorial",
+    "section": "Practical Tips",
+    "text": "Practical Tips\nStart with a few projections rather than every pair. Arrange panels so neighboring projections share one variable. Use rug_edges=\"shared\" when you want the highlighted observation to feel threaded through the map. If the diagram starts to look like a pairplot, reduce labels and ticks before adding more panels.",
+    "crumbs": [
+      "Palmer Penguins Tutorial"
+    ]
+  },
+  {
+    "objectID": "api.html",
+    "href": "api.html",
+    "title": "API Reference",
+    "section": "",
+    "text": "Rugprint has a small object-oriented API. The usual workflow is:\nfrom rugprint.core import (\n    Rugprint,\n    load,\n    rugprint,\n    load_penguins,\n    default_penguins_layout,\n    rank_pair_separation,\n)",
+    "crumbs": [
+      "API Reference"
+    ]
+  },
+  {
+    "objectID": "api.html#loaddata-kwargs---rugprint",
+    "href": "api.html#loaddata-kwargs---rugprint",
+    "title": "API Reference",
+    "section": "load(data, **kwargs) -> Rugprint",
+    "text": "load(data, **kwargs) -&gt; Rugprint\nCreate a reusable Rugprint object. This is the recommended entry point.\n\npenguins = load_penguins()\nprojections, layout = default_penguins_layout()\n\nrp = load(\n    penguins,\n    projections=projections,\n    layout=layout,\n    group=\"species\",\n    highlight=0,\n)\n\nrp\n\n\nRequired Inputs\n\ndata\n\nA pandas dataframe or dataframe-like object.\n\nprojections\n\nA list of (x_column, y_column) pairs. Each pair becomes one scatterplot panel.\n\nlayout\n\nA dictionary mapping each projection to a (row, column) coordinate. Coordinates do not need to form a complete grid; empty cells stay empty.\n\n\n\n\nOptional Data Inputs\n\ngroup\n\nColumn name used to color observations and create a figure-level legend.\n\nhighlight\n\nInteger row position or dataframe index label. The highlighted observation is emphasized in every projection.",
+    "crumbs": [
+      "API Reference"
+    ]
+  },
+  {
+    "objectID": "api.html#rugprint.plot...---matplotlib.figure.figure",
+    "href": "api.html#rugprint.plot...---matplotlib.figure.figure",
+    "title": "API Reference",
+    "section": "Rugprint.plot(...) -> matplotlib.figure.Figure",
+    "text": "Rugprint.plot(...) -&gt; matplotlib.figure.Figure\nDraw the projection-rug map. The returned object is a matplotlib Figure, so you can save or further customize it.\n\nfig = rp.plot(\n    title=\"Palmer Penguins projection-rug map\",\n)\n\nCommon plot options:\n\ndiagram_mode=True\n\nUse a low-furniture diagram style. This hides axis labels and tick labels by default.\n\nshow_axis_labels=False\n\nShow or hide compact per-panel variable labels.\n\nshow_tick_labels=False\n\nShow or hide tick labels.\n\nrug_edges=\"shared\"\n\nChoose where rugs are drawn. Supported values are \"shared\", \"minimal\", \"outer\", or a dictionary specifying exact edges per projection.\n\nconnect_shared_rugs=True\n\nIf a highlighted observation is set, draw subtle connectors between adjacent panels that share a variable.\n\nconnector_style=\"dotted\"\n\nStyle for highlighted connectors. \"dotted\" and \"dashed\" are supported, or pass a matplotlib linestyle.\n\npanel_gap=0.04\n\nDistance between panels in diagram mode.\n\nrug_gap=0.01\n\nDistance between a panel border and its rug marks.\n\npoint_size, alpha, rug_alpha, rug_length\n\nVisual tuning for points and rugs.",
+    "crumbs": [
+      "API Reference"
+    ]
+  },
+  {
+    "objectID": "api.html#with_highlighthighlight---rugprint",
+    "href": "api.html#with_highlighthighlight---rugprint",
+    "title": "API Reference",
+    "section": ".with_highlight(highlight) -> Rugprint",
+    "text": ".with_highlight(highlight) -&gt; Rugprint\nReturn a copy of the object with a different highlighted observation. This is useful for tracking several individual rows through the same projection map.\n\nfig = rp.with_highlight(12).plot(\n    title=\"A different penguin tracked through the same map\",\n)",
+    "crumbs": [
+      "API Reference"
+    ]
+  },
+  {
+    "objectID": "api.html#rank_pairsfeaturesnone-groupnone---pandas.dataframe",
+    "href": "api.html#rank_pairsfeaturesnone-groupnone---pandas.dataframe",
+    "title": "API Reference",
+    "section": ".rank_pairs(features=None, group=None) -> pandas.DataFrame",
+    "text": ".rank_pairs(features=None, group=None) -&gt; pandas.DataFrame\nRank candidate projection pairs using this object’s data. If features is omitted, Rugprint uses the variables already present in the projection map.\n\nrp.rank_pairs()\n\nThe returned dataframe has:\n\nx\n\nFirst variable in the candidate pair.\n\ny\n\nSecond variable in the candidate pair.\n\nmean_centroid_distance\n\nMean pairwise Euclidean distance between group centroids in that two-dimensional projection.",
+    "crumbs": [
+      "API Reference"
+    ]
+  },
+  {
+    "objectID": "api.html#rugprintdata-kwargs---matplotlib.figure.figure",
+    "href": "api.html#rugprintdata-kwargs---matplotlib.figure.figure",
+    "title": "API Reference",
+    "section": "rugprint(data, **kwargs) -> matplotlib.figure.Figure",
+    "text": "rugprint(data, **kwargs) -&gt; matplotlib.figure.Figure\nA one-shot wrapper for quick scripts. Internally, this creates a Rugprint object and immediately calls .plot().\n\nfig = rugprint(\n    penguins,\n    projections=projections,\n    layout=layout,\n    group=\"species\",\n    highlight=0,\n    title=\"One-shot Rugprint call\",\n)",
+    "crumbs": [
+      "API Reference"
+    ]
+  },
+  {
+    "objectID": "api.html#rank_pair_separationdata-features-group---pandas.dataframe",
+    "href": "api.html#rank_pair_separationdata-features-group---pandas.dataframe",
+    "title": "API Reference",
+    "section": "rank_pair_separation(data, features, group) -> pandas.DataFrame",
+    "text": "rank_pair_separation(data, features, group) -&gt; pandas.DataFrame\nStandalone helper for ranking all feature pairs by mean between-group centroid separation.\n\nfeatures = [\n    \"bill_length_mm\",\n    \"bill_depth_mm\",\n    \"flipper_length_mm\",\n    \"body_mass_g\",\n]\n\nrank_pair_separation(penguins, features, group=\"species\")",
+    "crumbs": [
+      "API Reference"
+    ]
+  },
+  {
+    "objectID": "api.html#edge-specification-examples",
+    "href": "api.html#edge-specification-examples",
+    "title": "API Reference",
+    "section": "Edge Specification Examples",
+    "text": "Edge Specification Examples\nUse rug_edges when you want direct control over where projection rugs appear.\n\nrug_edges = {\n    (\"bill_length_mm\", \"bill_depth_mm\"): (\"bottom\", \"left\"),\n    (\"bill_length_mm\", \"flipper_length_mm\"): (\"top\", \"left\"),\n    (\"body_mass_g\", \"flipper_length_mm\"): (\"bottom\", \"right\"),\n    (\"body_mass_g\", \"bill_depth_mm\"): (\"bottom\", \"left\"),\n}\n\nfig = rp.plot(rug_edges=rug_edges, title=\"Custom rug edges\")",
+    "crumbs": [
+      "API Reference"
+    ]
+  },
+  {
+    "objectID": "api.html#credit",
+    "href": "api.html#credit",
+    "title": "API Reference",
+    "section": "Credit",
+    "text": "Credit\nRugprint is inspired by Edward R. Tufte’s projection/rug display idea in The Visual Display of Quantitative Information (Graphics Press, 1983).",
+    "crumbs": [
+      "API Reference"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Rugprint",
+    "section": "",
+    "text": "Rugprint makes a compact multivariate fingerprint: selected 2D scatterplot projections arranged as a sparse map, with edge rugs showing how the same observations collapse onto one-dimensional axes.\nBefore reducing a complex state to one number, look across several measurements at once.",
+    "crumbs": [
+      "Rugprint"
+    ]
+  },
+  {
+    "objectID": "index.html#the-picture",
+    "href": "index.html#the-picture",
+    "title": "Rugprint",
+    "section": "The Picture",
+    "text": "The Picture\nThis is the core idea. The highlighted penguin is tracked through a chain of projection panels. Inside each panel, dashed local guides connect the point to its x and y rugs. Between neighboring panels, dotted connectors pass through rug gutters where the panels share a variable.",
+    "crumbs": [
+      "Rugprint"
+    ]
+  },
+  {
+    "objectID": "index.html#explore-the-api-and-tutorials",
+    "href": "index.html#explore-the-api-and-tutorials",
+    "title": "Rugprint",
+    "section": "Explore The API And Tutorials",
+    "text": "Explore The API And Tutorials\nThe API reference explains the main inputs and outputs: load(...), the Rugprint object, .plot(), .with_highlight(...), .rank_pairs(...), and the one-shot rugprint(...) wrapper.\nThe longer hands-on walkthrough is the Palmer Penguins tutorial. Start there if you want to adapt the plot for your own dataset.",
+    "crumbs": [
+      "Rugprint"
+    ]
+  },
+  {
+    "objectID": "index.html#make-your-own-rugprint",
+    "href": "index.html#make-your-own-rugprint",
+    "title": "Rugprint",
+    "section": "Make Your Own Rugprint",
+    "text": "Make Your Own Rugprint\nThe object-oriented API is the recommended path. Load a dataframe into a Rugprint object, then call .plot().\n\nrp = load(\n    penguins,\n    projections=projections,\n    layout=layout,\n    group=\"species\",\n    highlight=12,\n)\n\nfig = rp.plot(title=\"Follow one penguin across projections\")\n\nA projection is a pair of column names: (x_column, y_column). A layout maps each projection to a sparse grid coordinate: (row, column). Missing cells remain empty, so the result does not have to look like a pairplot matrix.",
+    "crumbs": [
+      "Rugprint"
+    ]
+  },
+  {
+    "objectID": "index.html#choosing-projection-pairs",
+    "href": "index.html#choosing-projection-pairs",
+    "title": "Rugprint",
+    "section": "Choosing Projection Pairs",
+    "text": "Choosing Projection Pairs\nrank_pair_separation(...) can suggest useful projection pairs. It ranks feature pairs by the mean distance between group centroids. It is a practical visual helper, not a statistical test.\n\nrank_pair_separation(penguins, features, group=\"species\")",
+    "crumbs": [
+      "Rugprint"
+    ]
+  },
+  {
+    "objectID": "index.html#one-shot-plotting",
+    "href": "index.html#one-shot-plotting",
+    "title": "Rugprint",
+    "section": "One-Shot Plotting",
+    "text": "One-Shot Plotting\nFor scripts, the one-shot wrapper creates a Rugprint object internally and immediately plots it.\n\nfig = rugprint(\n    penguins,\n    projections=projections,\n    layout=layout,\n    group=\"species\",\n    highlight=0,\n    title=\"One-shot Rugprint call\",\n)",
+    "crumbs": [
+      "Rugprint"
+    ]
+  },
+  {
+    "objectID": "index.html#install",
+    "href": "index.html#install",
+    "title": "Rugprint",
+    "section": "Install",
+    "text": "Install\nFrom this repository:\npip install git+https://github.com/sangyu/rugprint.git\nFor local development:\ngit clone https://github.com/sangyu/rugprint.git\ncd rugprint\npip install -e .\nIf your pip is old and editable install fails, upgrade pip or install normally from the repository.",
+    "crumbs": [
+      "Rugprint"
+    ]
+  },
+  {
+    "objectID": "index.html#credit",
+    "href": "index.html#credit",
+    "title": "Rugprint",
+    "section": "Credit",
+    "text": "Credit\nRugprint is inspired by Edward R. Tufte’s projection/rug display idea in The Visual Display of Quantitative Information (Graphics Press, 1983).",
+    "crumbs": [
+      "Rugprint"
+    ]
+  },
+  {
+    "objectID": "index.html#for-people-new-to-nbdev",
+    "href": "index.html#for-people-new-to-nbdev",
+    "title": "Rugprint",
+    "section": "For People New To nbdev",
+    "text": "For People New To nbdev\nThis repo uses nbdev 3. The source of truth is the notebooks in nbs/:\n\nnbs/index.ipynb generates this README and the docs landing page.\nnbs/00_core.ipynb exports the Python package code to rugprint/core.py.\nnbs/01_tests.ipynb contains executable tests for CI.\nnbs/tutorial_penguins.ipynb renders the Palmer Penguins tutorial for GitHub Pages.\n\nCommon commands:\nnbdev_export      # export package code from notebooks\nnbdev_test        # run notebook tests\nnbdev_docs        # build the docs site\nIn this environment, the equivalent Python-module commands are used because the nbdev shell scripts are not on PATH.",
+    "crumbs": [
+      "Rugprint"
+    ]
+  }
+]
